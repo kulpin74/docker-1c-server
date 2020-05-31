@@ -11,13 +11,13 @@
 Скопируйте deb-файлы дистрибутива сервера 1С:Предприятия в каталог `docker-1c-server` и затем выполните команды (здесь и далее вам понадобятся права администратора):
 
     cd docker-1c-server
-    docker build --tag 1c-server .
-    docker run -d --name 1c-srv -p 1540:1540 -p 1541:1541 -p 1560-1591:1560-1591 1c-server:latest
+    docker-compose build
 
-Узнать UID и GID пользователя, с правами которого сервер 1С:Предприятия работает в контейнере, можно с помощью команды
+Права на volume задать для UID
 
-    docker exec 1c-server id usr1cv8
+    chown -R 1000:1000 home
+    chown -R 1000:1000 logs
 
-которая выдаст примерно такие данные
+Ну и собственно запуск:
 
-    uid=999(usr1cv8) gid=1000(grp1cv8) groups=1000(grp1cv8)
+    docker-compose up -d

@@ -1,5 +1,11 @@
 FROM ubuntu:bionic
 
+ARG UID=1000
+ARG GID=1000
+
+RUN groupadd --gid $GID grp1cv8 && \
+    useradd --uid $UID --gid $GID --shell /bin/bash --create-home usr1cv8
+
 ENV DEBIAN_FRONTEND noninteractive
 
 ENV GOSU_VERSION 1.12
@@ -15,21 +21,17 @@ RUN apt-get -qq update \
 RUN localedef --inputfile ru_RU --force --charmap UTF-8 --alias-file /usr/share/locale/locale.alias ru_RU.UTF-8
 ENV LANG ru_RU.utf8
 
+ARG PLATFORM_VERSION
+ARG SERVER_VERSION
 ADD *.deb /tmp/
-
-ENV PLATFORM_VERSION 83
-ENV SERVER_VERSION 8.3.16-1063
 RUN dpkg --install /tmp/1c-enterprise$PLATFORM_VERSION-common_${SERVER_VERSION}_amd64.deb 2> /dev/null \
   && dpkg --install /tmp/1c-enterprise$PLATFORM_VERSION-server_${SERVER_VERSION}_amd64.deb 2> /dev/null \
-  && rm /tmp/*.deb \
-  && mkdir --parent /var/log/1C /home/usr1cv8/.1cv8/1C/1cv8/conf \
-  && chown --recursive usr1cv8:grp1cv8 /var/log/1C /home/usr1cv8
+  && rm /tmp/*.deb
 
-COPY container/docker-entrypoint.sh /
-COPY container/logcfg.xml /home/usr1cv8/.1cv8/1C/1cv8/conf
-
-ENTRYPOINT ["/docker-entrypoint.sh"]
+COPY entrypoint.sh /
+COPY logcfg.xml /
 
 EXPOSE 1540-1541 1560-1591
 
+ENTRYPOINT ["/entrypoint.sh"]
 CMD ["ragent"]

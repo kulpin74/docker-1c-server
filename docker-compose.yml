@@ -1,0 +1,20 @@
+version: '3.4'
+
+services:
+  server:
+    build:
+      context: .
+      args:
+        - PLATFORM_VERSION=83
+        - SERVER_VERSION=8.3.16-1063
+    image: server:8.3.16-1063
+    container_name: 1c-server
+    hostname: 1c-server
+    ports:
+      - "1540:1540"
+      - "1541:1541"
+      - "1560-1591:1560-1591"
+    volumes:
+      - ./home:/home/usr1cv8
+      - ./logs:/var/log/1c
+      - /etc/localtime:/etc/localtime:ro
